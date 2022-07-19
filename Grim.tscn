@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://singletons/Grim/Grim.gd" type="Script" id=1]
+
+[sub_resource type="Curve" id=1]
+_data = [ Vector2( 0.00506329, 0.0242215 ), 0.0, 0.0, 0, 0, Vector2( 0.994937, 1 ), 2.97476, 0.0, 0, 0 ]
+
+[node name="Grim" type="Node"]
+script = ExtResource( 1 )
+curve = SubResource( 1 )
+step = 0.1
+interval = 1.0
+intensity_range = 0.2
+
+[node name="Interval" type="Timer" parent="."]
+one_shot = true
