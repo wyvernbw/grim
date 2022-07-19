@@ -7,21 +7,23 @@ This is a utility to dynamically register events and callbacks to be used
 procedurally in a game according to an intensity curve!
 """
 
-onready var timer := $Interval
+onready var timer := add_child(Timer.new())
 
 var event_pool := {}
 var flasks := {}
 
 export var curve: Curve
 export var step: float
-export var interval: float
+export var interval: float setget set_interval
 export var intensity_range: float
 
 
-func _ready():
-	grim_init()
-	var event_2 := Event.new({"id": "chase sequence", "intensity": 0.5})
-	register_event(event_2, {})
+# class constructor
+func _init(properties: Dictionary):
+	self.curve = properties.curve
+	self.step = properties.step
+	self.interval = properties.interval
+	self.intensity_range = properties.intensity_range
 
 
 # function to register an event into the grim hashmap
@@ -35,6 +37,11 @@ func register_event(event: Event, deps: Dictionary) -> void:
 # function to run the callback of an event given it's key
 func run(event: String) -> Dictionary:
 	return event_pool[event].action()
+
+
+# setter function to set the interval of the timer
+func set_interval(interval: float) -> void:
+	timer.interval = interval
 
 
 # function to initialize the grim system
