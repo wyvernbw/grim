@@ -7,7 +7,7 @@ This is a utility to dynamically register events and callbacks to be used
 procedurally in a game according to an intensity curve!
 """
 
-onready var timer := add_child(Timer.new())
+var timer := Timer.new()
 
 var event_pool := {}
 var flasks := {}
@@ -18,8 +18,15 @@ export var interval: float setget set_interval
 export var intensity_range: float
 
 
+func _ready():
+	add_child(timer)
+	print("test")
+
+
 # class constructor
-func _init(properties: Dictionary):
+func _init(properties: Dictionary = {}):
+	if properties.empty():
+		return
 	self.curve = properties.curve
 	self.step = properties.step
 	self.interval = properties.interval
@@ -40,8 +47,8 @@ func run(event: String) -> Dictionary:
 
 
 # setter function to set the interval of the timer
-func set_interval(interval: float) -> void:
-	timer.interval = interval
+func set_interval(new_interval: float) -> void:
+	timer.wait_time = new_interval
 
 
 # function to initialize the grim system
@@ -63,7 +70,13 @@ func grim_loop(acc: float = 0) -> void:
 	# calculate current intensity
 	acc = acc + step
 	var value = curve.interpolate(acc)
-	print(value, " : ", closest_flask(value))
+
+	# run the callback of a random event in the closest flask
+	var flask = closest_flask(value)
+	var rng := RandomNumberGenerator.new()
+	rng.randomize()
+	var event = flask.events[rng.randi_range(0, flask.events.size() - 1)]
+	event.run()
 
 	# recurse
 	grim_loop(acc)
