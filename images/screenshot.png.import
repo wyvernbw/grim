@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/screenshot.png-a77267c89e03a6cd684bd39ab7baa93f.stex"
+path="res://.import/screenshot.png-7b3a4b9a66e25c56e5521bc2fab1fff7.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://singletons/Grim/images/screenshot.png"
-dest_files=[ "res://.import/screenshot.png-a77267c89e03a6cd684bd39ab7baa93f.stex" ]
+source_file="res://grim/images/screenshot.png"
+dest_files=[ "res://.import/screenshot.png-7b3a4b9a66e25c56e5521bc2fab1fff7.stex" ]
 
 [params]
 
