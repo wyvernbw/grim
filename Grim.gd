@@ -73,13 +73,18 @@ func grim_loop(acc: float = 0) -> void:
 
 	# run the callback of a random event in the closest flask
 	var flask = closest_flask(value)
+	run_flask(flask)
+
+	# recurse
+	grim_loop(acc)
+
+
+#
+func run_flask(flask: Dictionary) -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.randomize()
 	var event = flask.events[rng.randi_range(0, flask.events.size() - 1)]
 	event.run()
-
-	# recurse
-	grim_loop(acc)
 
 
 # function that returns true if an event is in the range of a given point, according with the intensity range
