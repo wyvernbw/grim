@@ -12,6 +12,7 @@ var timer := Timer.new()
 var event_pool := {}
 var flasks := {}
 
+export var manual: bool
 export var curve: Curve
 export var step: float
 export var interval: float setget set_interval
@@ -31,6 +32,7 @@ func _init(properties: Dictionary = {}):
 	self.step = properties.step
 	self.interval = properties.interval
 	self.intensity_range = properties.intensity_range
+	self.manual = properties.manual
 
 
 # function to register an event into the grim hashmap
