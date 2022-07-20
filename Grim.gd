@@ -35,10 +35,17 @@ func _init(properties: Dictionary = {}):
 
 # function to register an event into the grim hashmap
 # and to group it into the closest flask using group()
-func register_event(event: Event, deps: Dictionary) -> void:
+func register(event: Event, deps: Dictionary) -> void:
 	event.inject(deps)
 	event_pool[event.id] = event
 	group(event)
+
+
+# function to register an event into the grim hashmap and add it to specific flask
+func register_to_flask(flask: Array, event: Event, deps: Dictionary) -> void:
+	event.inject(deps)
+	event_pool[event.id] = event
+	flask.append(event)
 
 
 # function to run the callback of an event given it's key
@@ -54,7 +61,8 @@ func set_interval(new_interval: float) -> void:
 # function to initialize the grim system
 func grim_init() -> void:
 	timer.wait_time = interval
-	grim_loop()
+	if not manual:
+		grim_loop()
 
 
 # the main grim logic loop, called every interval
@@ -79,6 +87,7 @@ func grim_loop(acc: float = 0) -> void:
 	grim_loop(acc)
 
 
+# function to run a random event in a flask
 func run_flask(flask: Array) -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.randomize()
