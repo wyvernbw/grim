@@ -35,10 +35,17 @@ func _init(properties: Dictionary = {}):
 
 # function to register an event into the grim hashmap
 # and to group it into the closest flask using group()
-func register_event(event: Event, deps: Dictionary) -> void:
+func register(event: Event, deps: Dictionary) -> void:
 	event.inject(deps)
 	event_pool[event.id] = event
 	group(event)
+
+
+# function to register an event into the grim hashmap and add it to specific flask
+func register_to_flask(flask: Array, event: Event, deps: Dictionary) -> void:
+	event.inject(deps)
+	event_pool[event.id] = event
+	flask.append(event)
 
 
 # function to run the callback of an event given it's key
@@ -54,7 +61,8 @@ func set_interval(new_interval: float) -> void:
 # function to initialize the grim system
 func grim_init() -> void:
 	timer.wait_time = interval
-	grim_loop()
+	if not manual:
+		grim_loop()
 
 
 # the main grim logic loop, called every interval
@@ -73,13 +81,18 @@ func grim_loop(acc: float = 0) -> void:
 
 	# run the callback of a random event in the closest flask
 	var flask = closest_flask(value)
-	var rng := RandomNumberGenerator.new()
-	rng.randomize()
-	var event = flask.events[rng.randi_range(0, flask.events.size() - 1)]
-	event.run()
+	run_flask(flask)
 
 	# recurse
 	grim_loop(acc)
+
+
+# function to run a random event in a flask
+func run_flask(flask: Array) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.randomize()
+	var event = flask[rng.randi_range(0, flask.size() - 1)]
+	event.run()
 
 
 # function that returns true if an event is in the range of a given point, according with the intensity range
@@ -107,7 +120,7 @@ func group(event: Event) -> void:
 
 
 # function to get the closest flask to an intensity
-func closest_flask(value: float) -> float:
+func closest_flask(value: float) -> Array:
 	var closest: float = 0
 	var closest_diff: float = value
 	for flask in flasks.keys():
@@ -117,4 +130,4 @@ func closest_flask(value: float) -> float:
 		if diff < closest_diff:
 			closest = flask
 			closest_diff = diff
-	return closest
+	return flasks[closest]
