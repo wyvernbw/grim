@@ -79,11 +79,10 @@ func grim_loop(acc: float = 0) -> void:
 	grim_loop(acc)
 
 
-#
-func run_flask(flask: Dictionary) -> void:
+func run_flask(flask: Array) -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.randomize()
-	var event = flask.events[rng.randi_range(0, flask.events.size() - 1)]
+	var event = flask[rng.randi_range(0, flask.size() - 1)]
 	event.run()
 
 
@@ -112,7 +111,7 @@ func group(event: Event) -> void:
 
 
 # function to get the closest flask to an intensity
-func closest_flask(value: float) -> float:
+func closest_flask(value: float) -> Array:
 	var closest: float = 0
 	var closest_diff: float = value
 	for flask in flasks.keys():
@@ -122,4 +121,4 @@ func closest_flask(value: float) -> float:
 		if diff < closest_diff:
 			closest = flask
 			closest_diff = diff
-	return closest
+	return flasks[closest]
