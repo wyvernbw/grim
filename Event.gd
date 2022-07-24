@@ -7,12 +7,12 @@ This should be instanced on another parent class that can provide the
 required dependencies.
 """
 
-var id: String = "Event"
-var intensity: float = 0.0
-var deps := {}
+export var id: String = "Event"
+export var intensity: float = 0.0
+export var deps := {}
 
 
-func _init(properties: Dictionary) -> void:
+func _init(properties: Dictionary = { "id": "event", "intensity": 0}) -> void:
 	id = properties.id
 	intensity = properties.intensity
 

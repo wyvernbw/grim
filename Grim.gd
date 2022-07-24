@@ -7,6 +7,8 @@ This is a utility to dynamically register events and callbacks to be used
 procedurally in a game according to an intensity curve!
 """
 
+signal grim_ready 
+
 var timer := Timer.new()
 
 var event_pool := {}
@@ -20,8 +22,10 @@ export var intensity_range: float
 
 
 func _ready():
+	timer.one_shot = true
 	add_child(timer)
-	print("test")
+	emit_signal("grim_ready")
+	print("🦐 grim: ready for init!")
 
 
 # class constructor
@@ -37,7 +41,7 @@ func _init(properties: Dictionary = {}):
 
 # function to register an event into the grim hashmap
 # and to group it into the closest flask using group()
-func register(event: Event, deps: Dictionary) -> void:
+func register(event: Event, deps: Dictionary = {}) -> void:
 	event.inject(deps)
 	event_pool[event.id] = event
 	group(event)
@@ -57,6 +61,7 @@ func run(event: String) -> Dictionary:
 
 # setter function to set the interval of the timer
 func set_interval(new_interval: float) -> void:
+	interval = new_interval
 	timer.wait_time = new_interval
 
 
@@ -65,6 +70,7 @@ func grim_init() -> void:
 	timer.wait_time = interval
 	if not manual:
 		grim_loop()
+	print("🦐 grim: init complete!")
 
 
 # the main grim logic loop, called every interval
@@ -75,11 +81,14 @@ func grim_loop(acc: float = 0) -> void:
 
 	# wait for the next interval
 	timer.start()
+	print("grim: waiting for next event... (", str(timer.wait_time), ")")
 	yield(timer, "timeout")
+	print("grim: next event!")
 
 	# calculate current intensity
 	acc = acc + step
 	var value = curve.interpolate(acc)
+	print("grim: intensity: ", str(value))
 
 	# run the callback of a random event in the closest flask
 	var flask = closest_flask(value)
@@ -90,11 +99,13 @@ func grim_loop(acc: float = 0) -> void:
 
 
 # function to run a random event in a flask
-func run_flask(flask: Array) -> void:
+func run_flask(flask: Array) -> Dictionary:
+	if flask.empty():
+		return {}
 	var rng := RandomNumberGenerator.new()
 	rng.randomize()
 	var event = flask[rng.randi_range(0, flask.size() - 1)]
-	event.run()
+	return event.action()
 
 
 # function that returns true if an event is in the range of a given point, according with the intensity range
@@ -123,13 +134,14 @@ func group(event: Event) -> void:
 
 # function to get the closest flask to an intensity
 func closest_flask(value: float) -> Array:
-	var closest: float = 0
-	var closest_diff: float = value
+	var closest: float = -1.0
+	var closest_diff: float = intensity_range
 	for flask in flasks.keys():
+		print(flask)
 		var diff: float = abs(flask - value)
 		if diff > intensity_range:
 			continue
 		if diff < closest_diff:
 			closest = flask
 			closest_diff = diff
-	return flasks[closest]
+	return flasks[closest] if closest in flasks else []
